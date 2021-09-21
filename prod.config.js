@@ -5,12 +5,13 @@ module.exports = {
 	entry: './src/index.js',
 	mode: 'production',
 	output: {
-		filename: 'index.js',
+		filename: 'pluginCheck.js',
 		path: path.resolve(__dirname, 'dist'),
 		clean: true,
 	},
 	plugins: [
 		new HtmlWebpackPlugin({
+			filename: 'pluginCheck.html',
 			template: 'src/index.html',
 		}),
 	],
