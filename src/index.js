@@ -318,7 +318,7 @@ const getMasterVersion = (plugin) => {
 };
 
 const sortTags = (tags) => {
-	return tags.sort((tagA, tagB) => semver.gte(tagA.name, tagB.name));
+	return tags.filter(tag => semver.valid(tag.name)).sort((tagA, tagB) => semver.gte(tagA.name, tagB.name));
 };
 
 const getTags = (plugin, githubToken) => {
@@ -336,7 +336,7 @@ const getTags = (plugin, githubToken) => {
 const eachPlugin = async (githubToken, callback) => {
 	const plugins = (await fetchPlugins())?.plugins;
 
-	await plugins.reduce(async (next, plugin) => {
+	await plugins.reduce(async (next, plugin, i) => {
 		await next;
 		const item = {
 			name: plugin.name,
@@ -372,22 +372,24 @@ const eachPlugin = async (githubToken, callback) => {
 		}
 
 		console.log(item.name);
-		callback(item);
+		callback(item, (i + 1) / plugins.length);
 	}, Promise.resolve());
 };
 
 const renderTable = async (githubToken) => {
 	const spinner = document.querySelector('.spinner-container');
+	const spinnerProgress = document.querySelector('.spinner-progress');
 	const table = document.getElementById('plugins-table').querySelector('tbody');
-	
+
 	spinner.style.display = 'block';
 	table.innerHTML = '';
 
 	try {
 		const data = [];
 
-		await eachPlugin(githubToken, (item) => {
+		await eachPlugin(githubToken, (item, progress) => {
 			data.push(item);
+			spinnerProgress.innerHTML = (progress * 100).toFixed(0) + '%';
 		});
 
 		table.innerHTML = '';
