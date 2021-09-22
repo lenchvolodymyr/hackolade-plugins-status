@@ -318,7 +318,9 @@ const getMasterVersion = (plugin) => {
 };
 
 const sortTags = (tags) => {
-	return tags.filter(tag => semver.valid(tag.name)).sort((tagA, tagB) => semver.gte(tagA.name, tagB.name));
+	const regExp = /(\d+\.\d+\.\d+)/i;
+
+	return tags.filter(tag => regExp.test(tag.name)).map((tag) => tag.name.match(regExp)[1]).sort((tagA, tagB) => semver.compare(tagB, tagA));
 };
 
 const getTags = (plugin, githubToken) => {
@@ -355,7 +357,7 @@ const eachPlugin = async (githubToken, callback) => {
 			}
 
 			if (tags.success) {
-				item.tag = sortTags(tags.result)[0].name;
+				item.tag = sortTags(tags.result)[0];
 			} else {
 				item.tagError = tags.result.message;
 			}
