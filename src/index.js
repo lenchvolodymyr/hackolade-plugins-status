@@ -64,7 +64,7 @@ const eachPlugin = async (githubToken, callback) => {
 		};
 
 		try {
-			const packageByMaster = await getMasterVersion(plugin);
+			const packageByMaster = await getTagVersion(plugin);
 			const tags = await getTags(plugin, githubToken);
 
 			if (packageByMaster.success) {
