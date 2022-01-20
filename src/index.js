@@ -64,13 +64,20 @@ const eachPlugin = async (githubToken, callback) => {
 		};
 
 		try {
-			const packageByMaster = await getTagVersion(plugin);
+			const packageByTag = await getTagVersion(plugin);
+			const packageByMaster = await getMasterVersion(plugin)
 			const tags = await getTags(plugin, githubToken);
 
 			if (packageByMaster.success) {
-				item.master = packageByMaster.result.version;
+				item.onMaster = packageByMaster.result.version;
 			} else {
-				item.masterError = packageByMaster.result.message;
+				item.onMasterError = packageByMaster.result.message;
+			}
+
+			if (packageByTag.success) {
+				item.onLatestTag = packageByTag.result.version;
+			} else {
+				item.onLatestTagError = packageByTag.result.message;
 			}
 
 			if (tags.success) {
@@ -79,8 +86,12 @@ const eachPlugin = async (githubToken, callback) => {
 				item.tagError = tags.result.message;
 			}
 
-			if (item.registry !== item.master) {
+			if (item.registry !== item.onMaster) {
 				item.generalError = 'package.json version in master branch does not correspond to registry';			
+			}
+
+			if (item.registry !== item.onLatestTag) {
+				item.generalError = 'package.json version on the latest tag does not correspond to registry';			
 			}
 
 			if (item.registry !== item.tag) {

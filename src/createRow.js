@@ -1,7 +1,7 @@
 
 const createCell = (value, error) => {
 	const cell = document.createElement('td');
-	
+
 	if (error) {
 		cell.appendChild(createErrorBadge(error));
 	}
@@ -41,7 +41,7 @@ const createErrorBadge = (error) => {
 	return span;
 };
 
-const createRow = ({ name, link, registry, tag, master, generalError, tagError, masterError }) => {
+const createRow = ({ name, link, registry, tag, onMaster, onLatestTag, generalError, tagError, onMasterError, onLatestTagError }) => {
 	const row = document.createElement('tr');
 
 	if (generalError) {
@@ -73,8 +73,15 @@ const createRow = ({ name, link, registry, tag, master, generalError, tagError, 
 
 	row.appendChild(
 		createCell(
-			wrapText(master || ''),
-			masterError,
+			wrapText(onMaster || ''),
+			onMasterError,
+		)
+	);
+
+	row.appendChild(
+		createCell(
+			wrapText(onLatestTag || ''),
+			onLatestTagError,
 		)
 	);
 
